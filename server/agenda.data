@@ -1,0 +1,9 @@
+{collection:"User",total:5}
+{name:"YUI",password:"AA",email:"123@e.com",phone:"123456"}
+{name:"MIO",password:"BB",email:"123@e.com",phone:"123456"}
+{name:"AZU",password:"QWERTY",email:"123@e.com",phone:"123456"}
+{name:"K-ON",password:"123",email:"NULL",phone:"123456"}
+{name:"lsc",password:"123",email:"me@lsich.com",phone:"123456"}
+{collection:"Meeting",total:2}
+{sponsor:"lsc",participator:"YUI",sdate:"2013-01-01/00:00",edate:"2013-01-02/00:00",title:"shixun"}
+{sponsor:"lsc",participator:"MIO",sdate:"1000-01-01/00:00",edate:"1001-01-02/00:00",title:"123"}
