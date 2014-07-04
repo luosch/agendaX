@@ -1,6 +1,0 @@
-server: 1
-	server/server
-
-client:
-	client/client
-
