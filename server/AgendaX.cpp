@@ -3,43 +3,7 @@
 #include "Xserver.h"
 #define PERM S_IRUSR|S_IWUSR
 const int BACKLOG = 20;
-const int MYPORT = 8888;
 using namespace std;
-
-/*// int => string
-string int2str(int num) {
-	string o_str, res;
-	while (num) {
-		o_str += num % 10 + '0';
-		num /= 10;
-	}
-	int len = o_str.length();
-	for (int i = 0; i < len; i++)
-		res += o_str[len - 1 - i];
-	return res;
-}
-
-// 获取当前系统时间
-string getCurTime() {
-	time_t now_time = time(0);
-	tm *local = localtime(&now_time);
-	string curTime;
-	cout << local->tm_year+1900 << endl;
-	cout << local->tm_mon+1 << endl;
-	cout << local->tm_mday << endl;
-	curTime += (int2str(local->tm_year+1900));
-	curTime += '-';
-	curTime += int2str(local->tm_mon+1);
-	curTime += '-';
-	curTime += int2str(local->tm_mday);
-	curTime += '/';
-	curTime += int2str(local->tm_hour);
-	curTime += ':';
-	curTime += int2str(local->tm_min);
-	curTime += ':';
-	curTime += int2str(local->tm_sec);
-	return curTime;
-}*/
 
 // 端口绑定函数，创建套件字，并绑定到指定端口
 int bindPort(int port) {
@@ -85,6 +49,9 @@ int main() {
   bool login = 0;
   // 创建共享存储区
   // 绑定端口
+  int MYPORT;
+  printf("请输入端口\n");
+  scanf("%d", &MYPORT);
   sockfd = bindPort(MYPORT);
   while (1) {
      // 指定端口上监听
@@ -98,8 +65,7 @@ int main() {
       exit(1);
     }
     printf("accept from: %s\n", inet_ntoa(their_addr.sin_addr));
-    // 发送问候消息
-    
+
     ppid = fork(); // 创建子进程
     if (ppid == 0) {
       while (1) {

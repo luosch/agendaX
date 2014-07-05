@@ -5,5 +5,5 @@ client: Xclient.cpp
 	$(CC) $(GG) -o client Xclient.cpp
 
 clean :
-	rm *.o *~ agendaX client
+	rm client *~
 

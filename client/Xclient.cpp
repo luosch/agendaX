@@ -1,16 +1,27 @@
+#include "Xclient.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <sys/types.h>
-#include <string.h>
-#include <string>
-#include <netdb.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/ipc.h>
+#include <errno.h>
+#include <sys/shm.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <signal.h>
+#include <netdb.h>
 #include <time.h>
+#include <string>
 #include <iostream>
-using namespace std;
+using std::endl;
+using std::cin;
+using std::cout;
+using std::string;
 
 int main() {
 	// 定义地址结构
@@ -69,7 +80,6 @@ int main() {
 	} else {
 	  printf("%s", buff);
 	}
-
 	// 创建子进程
 	pid = fork();
 	while (1) {
@@ -77,9 +87,12 @@ int main() {
 			// 父进程用于发送消息
 			memset(buff, 0, sizeof(buff));
 			scanf("%s", buff);
-	    strncat(buff, "*", 1);
-			strncat(buff, user, strlen(user));
-			if ((send(clientfd, buff, sizeof(buff), 0)) == -1) {
+			string buff_r = sendControl(buff);
+			buff_r += '*';
+			buff_r += string(user);
+	    // strncat(buff, "*", 1);
+			// strncat(buff, user, strlen(user));
+			if ((send(clientfd, buff_r.c_str(), buff_r.length(), 0)) == -1) {
 				perror("send\n");
 				exit(1);
 			}

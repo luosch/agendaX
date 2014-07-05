@@ -86,6 +86,14 @@ string Xserver::OperationControl(char *buff) {
     eDate = op.substr(i+1, 16);
     return queryMeetingByTimeInterval(name, sDate, eDate);
   }
+  if (op.substr(0, 2) == "dc") {
+  	string pw;
+  	int i;
+    for (i = 3; op[i] != '*'; i++) {}
+    cout << pw << endl;
+    pw = op.substr(3, i - 3);
+    return deleteUser(name, pw);
+  }
   // cm,ZZZ,MIO,2014-01-01/00:00,2014-01-02/00:00
   if (op.substr(0, 2) == "cm") {
     string title, part, sDate, eDate;
@@ -100,23 +108,58 @@ string Xserver::OperationControl(char *buff) {
     return createMeeting(name, title, part, sDate, eDate);
   }
   
+  if (op.substr(0, 1) == "r") {
+    string name, password, email, phone;
+    int s1 = 2, s2, s3, s4, len = op.length();
+    for (s2 = s1 + 1; op[s2] != ','; s2++) {}
+    for (s3 = s2 + 1; op[s3] != ','; s3++) {}
+    for (s4 = s3 + 1; op[s4] != ','; s4++) {}
+    name = op.substr(s1+1, s2-s1-1);
+    password = op.substr(s2+1, s3-s2-1);
+    email = op.substr(s3+1, s4-s3-1);
+    phone = op.substr(s4+1, len-s4-1);
+    return userRegister(name, password, email, phone);
+  }
+  
   return "\ninvalid input\n\n";
+}
+
+string Xserver::userRegister(string uName, string password
+, string email, string phone) {
+  bool reg = agendaService_.userRegister(uName, password, email, phone);
+  if (!reg)
+  	return "[error] register fail!\n";
+  else
+    return "[register] succeed!\n";
+}
+
+string Xserver::deleteUser(string uName, string pw) {
+	bool del = agendaService_.deleteUser(uName, pw);
+	if (!del) {
+		return "\n[error] delete agenda account fail!\n\n";
+	}
+  else {
+    return "\n[delete agenda account] succeed!\n\n";
+  }
 }
 
 string Xserver::getHelp() {
   string tmp;
-  tmp += "----------------Welcome to AgendaX-----------------\n";
+  tmp += "\n----------------Welcome to AgendaX-----------------\n";
   tmp += "Action :\n";
+  tmp += "r   - register an agenda account\n";
   tmp += "lu  - list all Agenda user\n";
-  tmp += "la  - list all meetings\n";;
+  tmp += "la  - list all meetings\n";
   tmp += "las - list all sponsor meetings\n";
   tmp += "lap - list all participate meetings\n";
-  tmp += "cm  - create a meeting(cm,title,participator,startDate,endDate)\n";
-  tmp += "qm  - query meeting by title(qm,title)\n";
+  tmp += "cm  - create a meeting\n";
+  tmp += "qm  - query meeting by title)\n";
   tmp += "qt  - query meeting by time interval(qt,startDate,endDate)\n";
-  tmp += "dm  - delete meeting by title(dm,title)\n";
+  tmp += "dm  - delete meeting by title\n";
   tmp += "da  - delete all meetings\n";
-  tmp += "---------------------------------------------------\n";
+  tmp += "dc  - delete agenda account\n";
+  tmp += "h   - get help\n";
+  tmp += "---------------------------------------------------\n\n";
   return tmp;
 }
 
@@ -144,18 +187,19 @@ string Xserver::userLogIn(string str) {
   } else {
     cout << getCurTime() << ":" << endl << "[" << uName << "] " << "[action] login succeed" << endl;
     tmp += "[log in] succeed!\n";
-    tmp += "----------------------Agenda-----------------------\n";
-    tmp += "Action :\n";
-    tmp += "lu  - list all Agenda user\n";
-    tmp += "la  - list all meetings\n";;
-    tmp += "las - list all sponsor meetings\n";
-    tmp += "lap - list all participate meetings\n";
-    tmp += "cm  - create a meeting(cm,title,participator,startDate,endDate)\n";
-    tmp += "qm  - query meeting by title(qm,title)\n";
-    tmp += "qt  - query meeting by time interval(qt,startDate,endDate)\n";
-    tmp += "dm  - delete meeting by title(dm,title)\n";
-    tmp += "da  - delete all meetings\n";
-    tmp += "---------------------------------------------------\n";
+    tmp += "\n----------------Welcome to AgendaX-----------------\n";
+		tmp += "Action :\n";
+		tmp += "lu  - list all Agenda user\n";
+		tmp += "la  - list all meetings\n";;
+		tmp += "las - list all sponsor meetings\n";
+		tmp += "lap - list all participate meetings\n";
+		tmp += "cm  - create a meeting\n";
+		tmp += "qm  - query meeting by title\n";
+		tmp += "qt  - query meeting by time interval\n";
+		tmp += "dm  - delete meeting by title\n";
+		tmp += "da  - delete all meetings\n";
+		tmp += "h   - get help\n";
+		tmp += "---------------------------------------------------\n\n";
     return tmp;
   }
 }
@@ -214,8 +258,6 @@ string Xserver::queryMeetingByTimeInterval(string uName, string sDate, string eD
 string Xserver::deleteMeetingByTitle(string uName, string title) {
   ostringstream oss;
   cout << getCurTime() << ":" << endl << "[" << uName << "] " << "[action] dm" << endl;
-	oss << "[delete meeting] [title]" << endl;
-  oss << "[delete meeting] ";
   bool qmb = agendaService_.deleteMeeting(uName, title);
   if (!qmb)
     oss << endl << "[error] delete meeting fail!" << endl;
@@ -228,10 +270,6 @@ string Xserver::createMeeting(string uName, string title
 , string part, string sDate, string eDate) {
   ostringstream oss;
   cout << getCurTime() << ":" << endl << "[" << uName << "] " << "[action] cm" << endl;
-	oss << "[create meeting] [title] [participator] ";
-  oss << "[start time<yyyy-mm-dd/hh:mm>] " << endl;
-  oss << "[end time<yyyy-mm-dd/hh:mm>]" << endl;
-  oss << "[create meeting] ";
   bool crm = agendaService_.createMeeting(uName, title, part, sDate, eDate);
   if (!crm)
     oss << endl << "[error] create meeting fail!" << endl << endl;

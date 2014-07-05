@@ -23,5 +23,5 @@ Xserver: Xserver.cpp Xserver.h
 	$(CC) $(GG) -c Xserver.cpp
 
 clean :
-	rm *.o *~ agendaX client
+	rm *.o *~ agendaX
 
